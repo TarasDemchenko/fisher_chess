@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Chessboard from "react-native-chessboard";
 import { Button, Text, View } from "react-native";
 import generateChess960Fen from "./components/RandomFen";
@@ -42,6 +42,7 @@ const GameScreen = () => {
   console.log("stateHistory", game?.history.length);
 
   const onMove = (move: ChessMoveInfo) => {
+    if (!game?.canEditMoves) return;
     const from = move.move.from;
     const to = move.move.to;
     const result = chess.move({ from, to });
@@ -68,22 +69,6 @@ const GameScreen = () => {
     setFen(newChess.fen());
     setCurrentHistoryIndex(index);
     setCurrentTurn(newChess.turn());
-
-    // if (index >= 0 && index < historyGame.length) {
-    //   const fenMove = historyGame[index].after;
-    //   chess.load(fenMove); // Загружаем состояние на этот ход
-    //   setFen(fenMove);
-    //   setCurrentHistoryIndex(index);
-    //   setCurrentTurn(chess.turn());
-    // }
-    // for (let i = 0; i <= index; i++) {
-    //   const fenMove = historyGame[i].after;
-    //   setFen(fenMove);
-    //   setCurrentHistoryIndex(index);
-    // const from = game?.history[i].from;
-    // const to = game?.history[i].to;
-    // const goMove = chess.move({ from, to });
-    // console.log("goMove", goMove);
   };
 
   const goBack = () => {
@@ -124,7 +109,9 @@ const GameScreen = () => {
       >
         {currentTurn === "w" ? "White to move" : "Black to move"}
       </Text>
+
       <Chessboard fen={fen} onMove={onMove} key={currentHistoryIndex} />
+
       <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
         <Button
           title="Back"
